@@ -10,8 +10,24 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Checkout the code
       - uses: actions/checkout@v4
-      - run: npm run build
+
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22' # Change to your desired Node.js version
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Build the application
+      - name: Build the application
+        run: npm run build
+
+      # Step 5: Deploy to Firebase Hosting
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
