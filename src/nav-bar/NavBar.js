@@ -24,11 +24,6 @@ function NavBar() {
                        aria-haspopup="true" aria-expanded={isDropdownOpen}>
                         Resources
                     </a>
-                    <div className={`dropdown-menu ${isDropdownOpen ? 'show' : ''}`}>
-                        {resourceList.map((resource, index) =>
-                            <a className="dropdown-item" href="#" key={index}>{resource}</a>
-                        )}
-                    </div>
                 </li>
                 <li className="nav-item">
                     <a className="nav-link" href="/book-resource">Book resource</a>
