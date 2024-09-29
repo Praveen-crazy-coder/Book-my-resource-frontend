@@ -4,7 +4,7 @@ import NavBar from "./nav-bar/NavBar";
 import CreateResource from "./create-resource/Create-resource";
 import {ResourceProvider} from "./contexts/ResourceListContext";
 import BookResource from "./book-resource/Book-resource"
-import {Route, Router, Routes} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 
 function App() {
   return (
