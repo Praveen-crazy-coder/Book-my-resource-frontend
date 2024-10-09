@@ -1,5 +1,5 @@
-import { useFormik } from 'formik';
-import { useState } from "react";
+import {useFormik} from 'formik';
+import {useState} from "react";
 import "react-datetime/css/react-datetime.css";
 import Datetime from "react-datetime";
 
@@ -10,17 +10,17 @@ function BookResource() {
             name: '',
             resource: '',
             date: new Date(),
+            fromTime: new Date(),
+            toTime: new Date(),
         },
         onSubmit: values => {
             alert(JSON.stringify(values, null, 2));
         },
     });
 
-    const [selectedDate, setSelectedDate] = useState(new Date());
-
     return (
-        <div style={{ padding: "20px", maxWidth: "500px", margin: "0 auto", fontFamily: "Arial" }}>
-            <h1 style={{ marginBottom: "20px" }}>Book Resource</h1>
+        <div style={{padding: "20px", maxWidth: "500px", margin: "0 auto", fontFamily: "Arial"}}>
+            <h1 style={{marginBottom: "20px"}}>Book Resource</h1>
             <form onSubmit={formik.handleSubmit}>
                 {/* Name Input */}
                 <div style={{marginBottom: "10px"}}>
@@ -53,18 +53,36 @@ function BookResource() {
                 </div>
 
                 {/* Datetime Picker */}
+                {/* Date Picker */}
                 <div style={{marginBottom: "10px"}}>
-                    <label>Select booking date and time:</label>
+                    <label>Select booking date:</label>
                     <Datetime
-                        value={selectedDate}
-                        onChange={(date) => {
-                            setSelectedDate(date);
-                            formik.setFieldValue('date', date);
-                        }}
+                        value={formik.values.date}
+                        onChange={(date) => formik.setFieldValue('date', date)}
+                        timeFormat={false} // Setting timeFormat to false will remove the time selector.
                         dateFormat="DD/MM/YYYY"
-                        timeFormat="hh:mm A"
                         className="form-control"
                         style={{width: "100%"}}
+                    />
+                </div>
+
+                <div style={{marginBottom: "10px"}}>
+                    <label>Select booking "From" time:</label>
+                    <Datetime
+                        value={formik.values.fromTime}
+                        onChange={(date) => formik.setFieldValue('fromTime', date)}
+                        dateFormat={false} // Setting dateFormat to false will remove date selector.
+                        timeFormat="hh:mm A"
+                    />
+                </div>
+
+                <div style={{marginBottom: "10px"}}>
+                    <label>Select booking "To" time:</label>
+                    <Datetime
+                        value={formik.values.toTime}
+                        onChange={(date) => formik.setFieldValue('toTime', date)}
+                        dateFormat={false} // Setting dateFormat to false will remove date selector.
+                        timeFormat="hh:mm A"
                     />
                 </div>
 
@@ -116,13 +134,13 @@ function BookResource() {
                     </table>
                 </div>
 
-                <div style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
+                <div style={{display: "flex", alignItems: "center", marginTop: "10px"}}>
                     {/* Per Page Dropdown */}
-                    <label style={{ marginRight: "10px" }}>Items per page:</label>
+                    <label style={{marginRight: "10px"}}>Items per page:</label>
                     <select
                         value={itemsPerPage}
                         onChange={(e) => setItemsPerPage(e.target.value)}
-                        style={{ padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
+                        style={{padding: "8px", borderRadius: "4px", border: "1px solid #ccc"}}
                     >
                         <option value={5}>5</option>
                         <option value={10}>10</option>
@@ -130,7 +148,7 @@ function BookResource() {
                     </select>
 
                     {/* Pagination */}
-                    <nav aria-label="Page navigation example" style={{ marginLeft: "20px" }}>
+                    <nav aria-label="Page navigation example" style={{marginLeft: "20px"}}>
                         <ul className="pagination">
                             <li className="page-item"><a className="page-link" href="/">Previous</a></li>
                             <li className="page-item"><a className="page-link" href="/">1</a></li>

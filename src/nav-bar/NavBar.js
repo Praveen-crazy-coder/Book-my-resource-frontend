@@ -1,32 +1,17 @@
 import './NavBar.css';
-import React, {useState} from 'react';
-import {useResource} from "../contexts/ResourceListContext";
-
+import { NavLink } from 'react-router-dom';
 function NavBar() {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const { resourceList = [] } = useResource();
-
-    const toggleDropdown = () => {
-        // Only toggle dropdown if resourceList is not empty
-        if (resourceList.length > 0) {
-            setIsDropdownOpen(prevState => !prevState);
-        }
-    };
-
     return (
         <div className="nav-bar">
             <ul className="nav nav-tabs">
                 <li className="nav-item">
-                    <a className="nav-link active" href="./">Home</a>
-                </li>
-                <li className="nav-item dropdown">
-                    <a className="nav-link dropdown-toggle" href="/create-resource" role="button" onClick={toggleDropdown}
-                       aria-haspopup="true" aria-expanded={isDropdownOpen}>
-                        Resources
-                    </a>
+                    <NavLink exact className="nav-link" activeClassName='active' to="/">Home</NavLink>
                 </li>
                 <li className="nav-item">
-                    <a className="nav-link" href="/book-resource">Book resource</a>
+                    <NavLink className="nav-link" activeClassName='active' to="/create-resource">Add resources</NavLink>
+                </li>
+                <li className="nav-item">
+                    <NavLink className="nav-link" activeClassName='active' to="/book-resource">Book resource</NavLink>
                 </li>
             </ul>
         </div>
