@@ -1,22 +1,51 @@
 import {useFormik} from 'formik';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import "react-datetime/css/react-datetime.css";
 import Datetime from "react-datetime";
+import api from "../api";
+import './Book-resource.css';
 
 function BookResource() {
+    const [resourceList, setResourceList] = useState([]);
+    const [bookings, setBookings] = useState([])
     const [itemsPerPage, setItemsPerPage] = useState(5); // Default items per page
     const formik = useFormik({
         initialValues: {
-            name: '',
-            resource: '',
+            bookedBy: '',
+            resourceName: '',
             date: new Date(),
             fromTime: new Date(),
             toTime: new Date(),
         },
         onSubmit: values => {
-            alert(JSON.stringify(values, null, 2));
+            const valuesCopy = {...values};
+            let date = values.date;
+            let formattedDate = `${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}`;
+            valuesCopy.date = formattedDate;
+            valuesCopy.fromTime = new Date(values.fromTime).toLocaleTimeString('en-US', { hour12: true });
+            valuesCopy.toTime = new Date(values.toTime).toLocaleTimeString('en-US', { hour12: true });
+            api.post('/book-resource', valuesCopy)
+                .then(response => {
+                    console.debug('Booked the resource')
+                })
+                .catch(error => {
+                    console.error(error)
+                    console.warn(process.env.API_BASE_URL)
+                });
         },
     });
+
+    useEffect(() => {
+        Promise.all([
+            api.get('/resources'),
+            api.get('/bookings')
+        ]).then(([resourceResponse, bookingsResponse, anotherResponse]) => {
+            setResourceList(resourceResponse.data);
+            const bookingsData = Object.values(bookingsResponse.data).filter(item => typeof item === 'object' && item !== null);
+            setBookings(bookingsData)
+        })
+            .catch(error => console.error(error));
+    }, []);
 
     return (
         <div style={{padding: "20px", maxWidth: "500px", margin: "0 auto", fontFamily: "Arial"}}>
@@ -24,10 +53,10 @@ function BookResource() {
             <form onSubmit={formik.handleSubmit}>
                 {/* Name Input */}
                 <div style={{marginBottom: "10px"}}>
-                    <label htmlFor="name">Booked by:</label>
+                    <label htmlFor="bookedBy">Booked by:</label>
                     <input
-                        id="name"
-                        name="name"
+                        id="bookedBy"
+                        name="bookedBy"
                         type="text"
                         onChange={formik.handleChange}
                         value={formik.values.name}
@@ -37,18 +66,18 @@ function BookResource() {
 
                 {/* Resource Dropdown */}
                 <div style={{marginBottom: "10px"}}>
-                    <label htmlFor="resource">Resource you wish to book:</label>
+                    <label htmlFor="resourceName">Resource you wish to book:</label>
                     <select
-                        id="resource"
-                        name="resource"
+                        id="resourceName"
+                        name="resourceName"
                         onChange={formik.handleChange}
                         value={formik.values.resource}
                         style={{padding: "8px", width: "100%", borderRadius: "4px", border: "1px solid #ccc"}}
                     >
                         <option value="">Select a resource</option>
-                        <option value="Meeting Room">Meeting Room</option>
-                        <option value="Conference Hall">Conference Hall</option>
-                        <option value="Projector">Projector</option>
+                        {resourceList.map((resource) => (
+                            <option value={resource.name}>{resource.name}</option>
+                        ))}
                     </select>
                 </div>
 
@@ -102,34 +131,30 @@ function BookResource() {
                     Submit
                 </button>
 
+                <h3 className="table-header">Booked resources:</h3>
                 <div>
                     <table className="table table-bordered" style={{marginTop: "10px"}}>
                         <thead>
                         <tr>
                             <th scope="col">#</th>
-                            <th scope="col">First</th>
-                            <th scope="col">Last</th>
-                            <th scope="col">Handle</th>
+                            <th scope="col">Booked by</th>
+                            <th scope="col">Resource name</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">From</th>
+                            <th scope="col">To</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td colSpan="2">Larry the Bird</td>
-                            <td>@twitter</td>
-                        </tr>
+                        {bookings.map((booking) => (
+                            <tr>
+                                <th scope="row">{booking.id}</th>
+                                <td>{booking.bookedBy}</td>
+                                <td>{booking.resourceName}</td>
+                                <td>{booking.date}</td>
+                                <td>{booking.fromTime}</td>
+                                <td>{booking.toTime}</td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>
