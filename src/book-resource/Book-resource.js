@@ -5,10 +5,22 @@ import Datetime from "react-datetime";
 import api from "../api";
 import './Book-resource.css';
 
+
 function BookResource() {
     const [resourceList, setResourceList] = useState([]);
-    const [bookings, setBookings] = useState([])
+    const [bookings, setBookings] = useState([]);
+    const [page, setPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5); // Default items per page
+    const handleDeleteButton = (bookingId) => {
+        api.delete(`/book-resource/${bookingId}`)
+            .then((response) => {
+                setBookings(bookings.filter(booking => booking.id !== bookingId))
+                console.log("Successfully deleted booking")
+            })
+            .catch((error) => {
+                console.error(error)
+            });
+    }
     const formik = useFormik({
         initialValues: {
             bookedBy: '',
@@ -17,16 +29,27 @@ function BookResource() {
             fromTime: new Date(),
             toTime: new Date(),
         },
+        validate: (values) => {
+            const errors = {};
+            if (!values.bookedBy) {
+                errors.bookedBy = 'Please add your name';
+            }
+            if (!values.resourceName) {
+                errors.resourceName = 'Please select resource name';
+            }
+            return errors;
+        },
         onSubmit: values => {
             const valuesCopy = {...values};
             let date = values.date;
-            let formattedDate = `${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}`;
+            let formattedDate = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
             valuesCopy.date = formattedDate;
-            valuesCopy.fromTime = new Date(values.fromTime).toLocaleTimeString('en-US', { hour12: true });
-            valuesCopy.toTime = new Date(values.toTime).toLocaleTimeString('en-US', { hour12: true });
+            valuesCopy.fromTime = new Date(values.fromTime).toLocaleTimeString('en-US', {hour12: true});
+            valuesCopy.toTime = new Date(values.toTime).toLocaleTimeString('en-US', {hour12: true});
             api.post('/book-resource', valuesCopy)
                 .then(response => {
                     console.debug('Booked the resource')
+                    window.location.reload();
                 })
                 .catch(error => {
                     console.error(error)
@@ -38,14 +61,14 @@ function BookResource() {
     useEffect(() => {
         Promise.all([
             api.get('/resources'),
-            api.get('/bookings')
-        ]).then(([resourceResponse, bookingsResponse, anotherResponse]) => {
+            api.get(`/bookings?page=${page}&limit=${itemsPerPage}`) // Add parameters to the API call
+        ]).then(([resourceResponse, bookingsResponse]) => {
             setResourceList(resourceResponse.data);
             const bookingsData = Object.values(bookingsResponse.data).filter(item => typeof item === 'object' && item !== null);
             setBookings(bookingsData)
         })
             .catch(error => console.error(error));
-    }, []);
+    }, [page, itemsPerPage]); // Adding Dependency
 
     return (
         <div style={{padding: "20px", maxWidth: "500px", margin: "0 auto", fontFamily: "Arial"}}>
@@ -62,6 +85,9 @@ function BookResource() {
                         value={formik.values.name}
                         style={{padding: "8px", width: "100%", borderRadius: "4px", border: "1px solid #ccc"}}
                     />
+                    {formik.touched.bookedBy && formik.errors.bookedBy ? (
+                        <div style={{color: 'red'}}>{formik.errors.bookedBy}</div>
+                    ) : null}
                 </div>
 
                 {/* Resource Dropdown */}
@@ -79,16 +105,19 @@ function BookResource() {
                             <option value={resource.name}>{resource.name}</option>
                         ))}
                     </select>
+                    {formik.touched.bookedBy && formik.errors.bookedBy ? (
+                        <div style={{color: 'red'}}>{formik.errors.resourceName}</div>
+                    ) : null}
                 </div>
 
-                {/* Datetime Picker */}
+                {/* DateTime Picker */}
                 {/* Date Picker */}
                 <div style={{marginBottom: "10px"}}>
                     <label>Select booking date:</label>
                     <Datetime
                         value={formik.values.date}
                         onChange={(date) => formik.setFieldValue('date', date)}
-                        timeFormat={false} // Setting timeFormat to false will remove the time selector.
+                        timeFormat={false}
                         dateFormat="DD/MM/YYYY"
                         className="form-control"
                         style={{width: "100%"}}
@@ -100,7 +129,7 @@ function BookResource() {
                     <Datetime
                         value={formik.values.fromTime}
                         onChange={(date) => formik.setFieldValue('fromTime', date)}
-                        dateFormat={false} // Setting dateFormat to false will remove date selector.
+                        dateFormat={false}
                         timeFormat="hh:mm A"
                     />
                 </div>
@@ -110,12 +139,11 @@ function BookResource() {
                     <Datetime
                         value={formik.values.toTime}
                         onChange={(date) => formik.setFieldValue('toTime', date)}
-                        dateFormat={false} // Setting dateFormat to false will remove date selector.
+                        dateFormat={false}
                         timeFormat="hh:mm A"
                     />
                 </div>
 
-                {/* Submit Button */}
                 <button
                     type="submit"
                     style={{
@@ -146,13 +174,16 @@ function BookResource() {
                         </thead>
                         <tbody>
                         {bookings.map((booking) => (
-                            <tr>
+                            <tr key={booking.id}>
                                 <th scope="row">{booking.id}</th>
                                 <td>{booking.bookedBy}</td>
                                 <td>{booking.resourceName}</td>
                                 <td>{booking.date}</td>
                                 <td>{booking.fromTime}</td>
                                 <td>{booking.toTime}</td>
+                                <td>
+                                    <button type="button" className="btn btn-danger" onClick={() => handleDeleteButton(booking.id)}>Delete</button>
+                                </td>
                             </tr>
                         ))}
                         </tbody>
@@ -165,6 +196,7 @@ function BookResource() {
                     <select
                         value={itemsPerPage}
                         onChange={(e) => setItemsPerPage(e.target.value)}
+
                         style={{padding: "8px", borderRadius: "4px", border: "1px solid #ccc"}}
                     >
                         <option value={5}>5</option>
@@ -175,11 +207,40 @@ function BookResource() {
                     {/* Pagination */}
                     <nav aria-label="Page navigation example" style={{marginLeft: "20px"}}>
                         <ul className="pagination">
-                            <li className="page-item"><a className="page-link" href="/">Previous</a></li>
-                            <li className="page-item"><a className="page-link" href="/">1</a></li>
-                            <li className="page-item"><a className="page-link" href="/">2</a></li>
-                            <li className="page-item"><a className="page-link" href="/">3</a></li>
-                            <li className="page-item"><a className="page-link" href="/">Next</a></li>
+                            <li className="page-item">
+                                <button type="button" className="page-link"
+                                        onClick={() => setPage(page => Math.max(page - 1, 1))}
+                                        disabled={page === 1}
+                                >Previous
+                                </button>
+                            </li>
+                            <li className="page-item">
+                                <button type="button"
+                                        className="page-link"
+                                        onClick={() => setPage(1)}
+                                >1
+                                </button>
+                            </li>
+                            <li className="page-item">
+                                <button type="button"
+                                        className="page-link"
+                                        onClick={() => setPage(2)}
+                                >2
+                                </button>
+                            </li>
+                            <li className="page-item">
+                                <button type="button"
+                                        className="page-link"
+                                        onClick={() => setPage(3)}
+                                >3
+                                </button>
+                            </li>
+                            <li className="page-item">
+                                <button type="button" className="page-link"
+                                        onClick={() => setPage(page => page + 1)}
+                                >Next
+                                </button>
+                            </li>
                         </ul>
                     </nav>
                 </div>
