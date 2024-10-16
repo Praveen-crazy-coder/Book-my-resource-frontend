@@ -7,6 +7,7 @@ import './Book-resource.css';
 
 
 function BookResource() {
+    const [errorMessage, setErrorMessage] = useState('');
     const [resourceList, setResourceList] = useState([]);
     const [bookings, setBookings] = useState([]);
     const [page, setPage] = useState(1);
@@ -52,8 +53,7 @@ function BookResource() {
                     window.location.reload();
                 })
                 .catch(error => {
-                    console.error(error)
-                    console.warn(process.env.API_BASE_URL)
+                    setErrorMessage(error.response.data.error);
                 });
         },
     });
@@ -158,93 +158,96 @@ function BookResource() {
                 >
                     Submit
                 </button>
-
-                <h3 className="table-header">Booked resources:</h3>
-                <div>
-                    <table className="table table-bordered" style={{marginTop: "10px"}}>
-                        <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Booked by</th>
-                            <th scope="col">Resource name</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">From</th>
-                            <th scope="col">To</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {bookings.map((booking) => (
-                            <tr key={booking.id}>
-                                <th scope="row">{booking.id}</th>
-                                <td>{booking.bookedBy}</td>
-                                <td>{booking.resourceName}</td>
-                                <td>{booking.date}</td>
-                                <td>{booking.fromTime}</td>
-                                <td>{booking.toTime}</td>
-                                <td>
-                                    <button type="button" className="btn btn-danger" onClick={() => handleDeleteButton(booking.id)}>Delete</button>
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div style={{display: "flex", alignItems: "center", marginTop: "10px"}}>
-                    {/* Per Page Dropdown */}
-                    <label style={{marginRight: "10px"}}>Items per page:</label>
-                    <select
-                        value={itemsPerPage}
-                        onChange={(e) => setItemsPerPage(e.target.value)}
-
-                        style={{padding: "8px", borderRadius: "4px", border: "1px solid #ccc"}}
-                    >
-                        <option value={5}>5</option>
-                        <option value={10}>10</option>
-                        <option value={15}>15</option>
-                    </select>
-
-                    {/* Pagination */}
-                    <nav aria-label="Page navigation example" style={{marginLeft: "20px"}}>
-                        <ul className="pagination">
-                            <li className="page-item">
-                                <button type="button" className="page-link"
-                                        onClick={() => setPage(page => Math.max(page - 1, 1))}
-                                        disabled={page === 1}
-                                >Previous
-                                </button>
-                            </li>
-                            <li className="page-item">
-                                <button type="button"
-                                        className="page-link"
-                                        onClick={() => setPage(1)}
-                                >1
-                                </button>
-                            </li>
-                            <li className="page-item">
-                                <button type="button"
-                                        className="page-link"
-                                        onClick={() => setPage(2)}
-                                >2
-                                </button>
-                            </li>
-                            <li className="page-item">
-                                <button type="button"
-                                        className="page-link"
-                                        onClick={() => setPage(3)}
-                                >3
-                                </button>
-                            </li>
-                            <li className="page-item">
-                                <button type="button" className="page-link"
-                                        onClick={() => setPage(page => page + 1)}
-                                >Next
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+                {errorMessage && <div style={{color: 'red'}}>{errorMessage}</div>}
             </form>
+
+            <h3 className="table-header">Booked resources:</h3>
+            <div>
+                <table className="table table-bordered" style={{marginTop: "10px"}}>
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Booked by</th>
+                        <th scope="col">Resource name</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">From</th>
+                        <th scope="col">To</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {bookings.map((booking) => (
+                        <tr key={booking.id}>
+                            <th scope="row">{booking.id}</th>
+                            <td>{booking.bookedBy}</td>
+                            <td>{booking.resourceName}</td>
+                            <td>{booking.date}</td>
+                            <td>{booking.fromTime}</td>
+                            <td>{booking.toTime}</td>
+                            <td>
+                                <button type="button" className="btn btn-danger"
+                                        onClick={() => handleDeleteButton(booking.id)}>Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style={{display: "flex", alignItems: "center", marginTop: "10px"}}>
+                {/* Per Page Dropdown */}
+                <label style={{marginRight: "10px"}}>Items per page:</label>
+                <select
+                    value={itemsPerPage}
+                    onChange={(e) => setItemsPerPage(e.target.value)}
+
+                    style={{padding: "8px", borderRadius: "4px", border: "1px solid #ccc"}}
+                >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                </select>
+
+                {/* Pagination */}
+                <nav aria-label="Page navigation example" style={{marginLeft: "20px"}}>
+                    <ul className="pagination">
+                        <li className="page-item">
+                            <button type="button" className="page-link"
+                                    onClick={() => setPage(page => Math.max(page - 1, 1))}
+                                    disabled={page === 1}
+                            >Previous
+                            </button>
+                        </li>
+                        <li className="page-item">
+                            <button type="button"
+                                    className="page-link"
+                                    onClick={() => setPage(1)}
+                            >1
+                            </button>
+                        </li>
+                        <li className="page-item">
+                            <button type="button"
+                                    className="page-link"
+                                    onClick={() => setPage(2)}
+                            >2
+                            </button>
+                        </li>
+                        <li className="page-item">
+                            <button type="button"
+                                    className="page-link"
+                                    onClick={() => setPage(3)}
+                            >3
+                            </button>
+                        </li>
+                        <li className="page-item">
+                            <button type="button" className="page-link"
+                                    onClick={() => setPage(page => page + 1)}
+                            >Next
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     );
 }
