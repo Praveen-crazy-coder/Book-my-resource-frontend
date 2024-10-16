@@ -5,6 +5,7 @@ import { AuthContext } from '../contexts/AuthContext';
 
 const Auth = () => {
     const { setIsAuthenticated } = useContext(AuthContext);
+    const [errorMsg, setErrorMsg] = useState('')
     const [form, setForm] = useState({ email: "", password: "" });
     const [isNewUser, setIsNewUser] = useState(false);
     let navigate = useNavigate();
@@ -23,15 +24,18 @@ const Auth = () => {
             let authUser;
             if (isNewUser) {
                 authUser = await doCreateUserWithEmailAndPassword(email, password);
+                localStorage.setItem('user_email', email)
             } else {
                 authUser = await doSignInWithEmailAndPassword(email, password);
             }
             if (authUser) {
                 setIsAuthenticated(true);
+                localStorage.setItem('user_email', email)
                 navigate("/book-resource");
             }
         } catch (error) {
             console.error(error);
+            setErrorMsg(error)
         }
     };
 
@@ -51,6 +55,7 @@ const Auth = () => {
             <p onClick={toggleForm} style={{ color: 'blue', cursor: 'pointer' }}>
                 {isNewUser ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
             </p>
+            {errorMsg && <div style={{color: 'red'}}>{errorMsg.message}</div>}
         </div>
     );
 };

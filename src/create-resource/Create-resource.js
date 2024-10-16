@@ -59,7 +59,7 @@ function CreateResource() {
             </div>
             <div>
                 <h5 style={{margin: '10px'}}>Available resources:</h5>
-                <table className="table table-bordered" style={{margin: '10px'}}>
+                <table className="table table-bordered" style={{maxWidth: '25%', margin: '10px'}}>
                     <thead>
                     <tr>
                         <th scope="col">#</th>
