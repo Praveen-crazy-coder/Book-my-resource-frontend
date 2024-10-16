@@ -32,7 +32,7 @@ const Auth = () => {
             if (authUser) {
                 setIsAuthenticated(true);
                 localStorage.setItem('user_email', email);
-                navigate("/book-resource");
+                navigate("/home");
             }
         } catch (error) {
             console.error(error);

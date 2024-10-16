@@ -6,7 +6,7 @@ function NavBar() {
         <div className="nav-bar">
             <ul className="nav nav-tabs">
                 <li className="nav-item">
-                    <NavLink exact className="nav-link" activeClassName='active' to="/">Home</NavLink>
+                    <NavLink exact className="nav-link" activeClassName='active' to="/home">Home</NavLink>
                 </li>
                 <li className="nav-item">
                     <NavLink className="nav-link" activeClassName='active' to="/create-resource">Add resources</NavLink>

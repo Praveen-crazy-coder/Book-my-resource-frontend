@@ -9,6 +9,7 @@ import {Route, Routes} from "react-router-dom";
 import Auth from "./auth/auth";
 import AuthenticatedRoute from "./customRoutes/AuthenticatedRoute";
 import {AuthContext} from "./contexts/AuthContext";
+import HomePage from "./home/Home"
 
 function App() {
     const { isAuthenticated, loading } = useContext(AuthContext);
@@ -23,6 +24,11 @@ function App() {
                 { isAuthenticated && <><Header/><NavBar/></>}
                 <Routes>
                     { !isAuthenticated ? <Route path="/login" element={<Auth />} /> : <Route path="/book-resource" element={<BookResource />} />}
+                    <Route path="/home" element={
+                        <AuthenticatedRoute>
+                            <HomePage />
+                        </AuthenticatedRoute>
+                    }/>
                     <Route path="/create-resource" element={
                         <AuthenticatedRoute>
                             <CreateResource />
