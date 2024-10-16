@@ -1,4 +1,14 @@
+/* Header.css */
+.Header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .Home-header {
-    text-align: center;
-    margin: 5px auto;
+    margin: auto;
+}
+
+.logout {
+    margin-right: 10px;
 }

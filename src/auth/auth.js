@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { doCreateUserWithEmailAndPassword, doSignInWithEmailAndPassword } from "../firebase-config";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../contexts/AuthContext';
+
 const Auth = () => {
     const { setIsAuthenticated } = useContext(AuthContext);
     const [form, setForm] = useState({ email: "", password: "" });
@@ -26,7 +27,7 @@ const Auth = () => {
                 authUser = await doSignInWithEmailAndPassword(email, password);
             }
             if (authUser) {
-                setIsAuthenticated(true); // Add this to update
+                setIsAuthenticated(true);
                 navigate("/book-resource");
             }
         } catch (error) {
@@ -40,14 +41,16 @@ const Auth = () => {
     };
 
     return (
-        <div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
             <h1>{isNewUser ? "Sign Up" : "Sign In"}</h1>
-            <form onSubmit={handleSubmit}>
-                <input name="email" type="email" placeholder="Email" onChange={handleChange} />
-                <input name="password" type="password" placeholder="Password" onChange={handleChange} />
-                <button type="submit">{isNewUser ? "Sign Up" : "Sign In"}</button>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '300px' }}>
+                <input name="email" type="email" placeholder="Email" onChange={handleChange} style={{ marginBottom: '1rem', width: '100%' }} />
+                <input name="password" type="password" placeholder="Password" onChange={handleChange} style={{ marginBottom: '1rem', width: '100%' }} />
+                <button type="submit" style={{ width: '100%' }}>{isNewUser ? "Sign Up" : "Sign In"}</button>
             </form>
-            <p onClick={toggleForm}>{isNewUser ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}</p>
+            <p onClick={toggleForm} style={{ color: 'blue', cursor: 'pointer' }}>
+                {isNewUser ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
+            </p>
         </div>
     );
 };
