@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext'
 
 function AuthenticatedRoute({ children }) {
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated, loading } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -11,6 +11,10 @@ function AuthenticatedRoute({ children }) {
             navigate('/login');
         }
     }, [isAuthenticated, navigate]);
+
+    if (loading) {
+        return null;  // or return a <Loading /> component if you like
+    }
 
     return isAuthenticated ? children : null;
 }

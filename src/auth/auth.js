@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { doCreateUserWithEmailAndPassword, doSignInWithEmailAndPassword } from "../firebase-config";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from '../contexts/AuthContext';
 const Auth = () => {
+    const { setIsAuthenticated } = useContext(AuthContext);
     const [form, setForm] = useState({ email: "", password: "" });
     const [isNewUser, setIsNewUser] = useState(false);
     let navigate = useNavigate();
@@ -24,7 +26,8 @@ const Auth = () => {
                 authUser = await doSignInWithEmailAndPassword(email, password);
             }
             if (authUser) {
-                navigate("/");
+                setIsAuthenticated(true); // Add this to update
+                navigate("/book-resource");
             }
         } catch (error) {
             console.error(error);

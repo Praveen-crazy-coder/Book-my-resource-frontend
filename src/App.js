@@ -11,14 +11,18 @@ import AuthenticatedRoute from "./customRoutes/AuthenticatedRoute";
 import {AuthContext} from "./contexts/AuthContext";
 
 function App() {
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated, loading } = useContext(AuthContext);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <ResourceProvider>
             <div className="app">
-                {isAuthenticated && <><Header/><NavBar/></>} {/*condition for Header and NavBar*/}
+                { isAuthenticated && <><Header/><NavBar/></>}
                 <Routes>
-                    <Route path="/login" element={<Auth />} />
+                    { !isAuthenticated ? <Route path="/login" element={<Auth />} /> : <Route path="/book-resource" element={<BookResource />} />}
                     <Route path="/create-resource" element={
                         <AuthenticatedRoute>
                             <CreateResource />
@@ -32,7 +36,7 @@ function App() {
                 </Routes>
             </div>
         </ResourceProvider>
-    )
+    );
 }
 
 export default App;
