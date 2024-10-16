@@ -24,7 +24,7 @@ const HomePage = () => {
                     backgroundColor: "rgba(0, 0, 0, 0.7)"
                 }}
             >
-                <h1 style={{ margin: 0 }}>Resource Scheduler</h1>
+                <h1 style={{ margin: 0 }}>Book My Resources</h1>
             </header>
 
             {/* Main Content */}
@@ -40,7 +40,7 @@ const HomePage = () => {
                     backgroundColor: "rgba(0, 0, 0, 0.7)"
                 }}
             >
-                <h2>Welcome to Resource Scheduler!</h2>
+                <h2>Welcome to Book My Resources!</h2>
                 <p style={{ fontSize: "1.2rem", maxWidth: "600px", lineHeight: "1.6" }}>
                     Our platform helps you efficiently schedule and manage resources such as meeting rooms, projectors, and other office equipment. Streamline your booking process and avoid double bookings by checking the availability in real-time. Whether you need a space for a meeting or technical equipment for a presentation, our app makes it simple and easy to reserve everything you need with just a few clicks.
                 </p>
@@ -55,7 +55,7 @@ const HomePage = () => {
                     padding: "1rem"
                 }}
             >
-                <p>&copy; 2024 Resource Scheduler. All rights reserved.</p>
+                <p>&copy; 2024 Book My Resources. All rights reserved.</p>
             </footer>
         </div>
     );
