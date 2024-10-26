@@ -24,9 +24,9 @@ function App() {
                 { isAuthenticated && <><Header/><NavBar/></>}
                 <Routes>
                     { !isAuthenticated ? <Route path="/login" element={<Auth />} /> : <Route path="/book-resource" element={<BookResource />} />}
-                    <Route path="/home" element={
+                    <Route path="/book-resource" element={
                         <AuthenticatedRoute>
-                            <HomePage />
+                            <BookResource />
                         </AuthenticatedRoute>
                     }/>
                     <Route path="/create-resource" element={
@@ -37,6 +37,11 @@ function App() {
                     <Route path="/book-resource" element={
                         <AuthenticatedRoute>
                             <BookResource />
+                        </AuthenticatedRoute>
+                    }/>
+                    <Route path="/home" element={
+                        <AuthenticatedRoute>
+                            <HomePage />
                         </AuthenticatedRoute>
                     }/>
                 </Routes>

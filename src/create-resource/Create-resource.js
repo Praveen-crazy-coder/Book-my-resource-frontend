@@ -20,6 +20,7 @@ function CreateResource() {
         api.post('/create-resource', {name: resourceName})
             .then(response => {
                 console.debug('added resource to db')
+                window.location.reload();
             })
             .catch(error => {
                 console.error(error)
